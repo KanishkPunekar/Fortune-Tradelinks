@@ -1,0 +1,39 @@
+/* ==========================================================================
+   Bulk Ethanol Supply page (/ethanol-supply).
+   ========================================================================== */
+
+/* Keep the long intro heading to a comfortable, balanced measure. */
+.ethanol-intro h2 {
+  max-width: 36ch;
+}
+
+/* How It Works: compact flow summary, then the numbered steps. */
+.ethanol-how__flow {
+  margin-top: 1.5rem;
+}
+
+.ethanol-how__flow .flow-diagram {
+  margin: 0;
+}
+
+/* The summary repeats the six step titles, so it only shows while it runs horizontally;
+   stacked vertically it would just be the same list twice. */
+@container flow-diagram (width < 8.5em) {
+  .ethanol-how__flow .flow-diagram__list {
+    display: none;
+  }
+}
+
+.ethanol-how .process-steps {
+  margin-top: 2.5rem;
+}
+
+/* Request a Quote band: list markers and the email need to read on navy. */
+.on-dark .ethanol-quote__list li::marker {
+  color: var(--color-on-dark-muted);
+}
+
+.ethanol-quote__email a {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}

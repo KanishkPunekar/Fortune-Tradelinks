@@ -1,0 +1,295 @@
+/* ==========================================================================
+   Request a Quote form (PROJECT_BRIEF.md, Section 10)
+   A surface-coloured panel. Short fields pair up in two columns when the
+   form itself is wide enough (container query), otherwise one column.
+   ========================================================================== */
+
+.quote-form {
+  /* Input and option borders: 3:1 against the field and the surface panel, in both themes. */
+  --quote-form-border: #7d8995;
+  container: quote-form / inline-size;
+  margin: 0;
+  padding: clamp(1.25rem, 0.5rem + 3vw, 2.5rem);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg); /* matches the rounded page-header panel above it */
+}
+
+.quote-form code {
+  font-size: 0.9em;
+}
+
+/* Dev-server banner: the form isn't connected to an endpoint. */
+.quote-form__dev {
+  max-width: none;
+  margin: 0 0 1.75rem;
+  padding: 0.85rem 1rem;
+  background: var(--color-placeholder-bg);
+  border: 1px dashed var(--quote-form-border);
+  border-radius: var(--radius);
+  font-size: var(--text-sm);
+  color: #2e3742; /* fixed: the yellow note stays light in both themes */
+}
+
+/* Layout ------------------------------------------------------------------ */
+
+.quote-form__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  column-gap: 1.5rem;
+}
+
+.quote-form__field {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* Each field ends in a message slot; its bottom padding is the space between fields. */
+.quote-form__message {
+  padding-bottom: 1.5rem;
+}
+
+@container quote-form (min-width: 30rem) {
+  .quote-form__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .quote-form__field--full {
+    grid-column: 1 / -1;
+  }
+
+  /* Starts a new row in the first column. */
+  .quote-form__field--new-row {
+    grid-column: 1;
+  }
+
+  /* Sits under "Recurring Requirement", which it depends on. */
+  .quote-form__field--frequency {
+    grid-column: 2;
+  }
+}
+
+/* Label, control and message rows line up across a pair, even when one label wraps. */
+@supports (grid-template-rows: subgrid) {
+  .quote-form__field:not(fieldset) {
+    display: grid;
+    grid-row: span 3;
+    grid-template-rows: subgrid;
+  }
+
+  .quote-form__field:not(fieldset) > .quote-form__label {
+    align-self: end;
+  }
+}
+
+.quote-form__field[hidden] {
+  display: none;
+}
+
+/* Without JS (where :has() is supported): only show the frequency field for "Yes". */
+.quote-form:has(input[name='recurring'][value='no']:checked) .quote-form__field--frequency {
+  display: none;
+}
+
+/* Labels ------------------------------------------------------------------ */
+
+.quote-form__label {
+  display: block;
+  margin: 0 0 0.45rem;
+  padding: 0;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--color-ink);
+}
+
+.quote-form__optional {
+  font-weight: 400;
+  color: var(--color-muted);
+}
+
+/* Text inputs, select, textarea ------------------------------------------- */
+
+.quote-form__control {
+  display: block;
+  width: 100%;
+  min-height: 3rem;
+  margin: 0;
+  padding: 0.65rem 0.85rem;
+  background-color: var(--color-field);
+  border: 1px solid var(--quote-form-border);
+  border-radius: var(--radius);
+  color: var(--color-text);
+  line-height: 1.4;
+}
+
+.quote-form__control::placeholder {
+  color: var(--color-muted);
+  opacity: 1;
+}
+
+.quote-form__control:hover {
+  border-color: var(--color-muted);
+}
+
+.quote-form__control:focus-visible {
+  border-color: var(--color-ink);
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.quote-form__control[aria-invalid='true'] {
+  border-color: var(--color-error);
+  box-shadow: inset 0 0 0 1px var(--color-error);
+}
+
+.quote-form__select {
+  appearance: none;
+  padding-right: 2.75rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23032f56' stroke-width='1.75'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.95rem center;
+  background-size: 0.8rem auto;
+  cursor: pointer;
+}
+
+/* Light chevron for the dark theme (a data-URI image can't use currentColor). */
+:root[data-theme='dark'] .quote-form__select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23eaf1f7' stroke-width='1.75'/%3E%3C/svg%3E");
+}
+
+.quote-form__textarea {
+  min-height: 8.5rem;
+  resize: vertical;
+}
+
+/* iOS Safari centres date values by default. */
+.quote-form__control::-webkit-date-and-time-value {
+  text-align: left;
+}
+
+/* Yes / No radio groups --------------------------------------------------- */
+
+.quote-form__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.quote-form__option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 6.5rem;
+  min-height: 3rem;
+  padding: 0.5rem 1.25rem 0.5rem 0.85rem;
+  background: var(--color-field);
+  border: 1px solid var(--quote-form-border);
+  border-radius: 999px; /* choice chips are pills, like the buttons */
+  color: var(--color-text);
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.quote-form__option:hover {
+  border-color: var(--color-muted);
+}
+
+.quote-form__option input {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin: 0;
+  accent-color: var(--color-brand);
+  cursor: pointer;
+}
+
+.quote-form__option:has(input:checked) {
+  border-color: var(--color-brand);
+  box-shadow: inset 0 0 0 1px var(--color-brand);
+}
+
+/* Show keyboard focus on the whole option box where :has() is supported. */
+.quote-form__option:has(input:focus-visible) {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+@supports selector(:has(*)) {
+  .quote-form__option input:focus-visible {
+    outline: none;
+  }
+}
+
+.quote-form__options--invalid .quote-form__option {
+  border-color: var(--color-error);
+  box-shadow: inset 0 0 0 1px var(--color-error);
+}
+
+/* Error messages ---------------------------------------------------------- */
+
+.quote-form__error {
+  max-width: none;
+  margin: 0.4rem 0 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--color-error);
+}
+
+/* Submit area ------------------------------------------------------------- */
+
+.quote-form__actions {
+  margin-top: 0.25rem;
+}
+
+.quote-form__noscript,
+.quote-form__alert:not(:empty) {
+  max-width: none;
+  margin: 0 0 1.25rem;
+  padding: 0.85rem 1rem;
+  border-left: 4px solid var(--color-ink);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: var(--color-field);
+  color: var(--color-text);
+}
+
+.quote-form__alert:not(:empty) {
+  border-left-color: var(--color-error);
+  background: var(--color-error-bg);
+}
+
+.quote-form__alert p {
+  margin: 0;
+  max-width: none;
+}
+
+.quote-form__submit {
+  width: 100%;
+}
+
+@container quote-form (min-width: 30rem) {
+  .quote-form__submit {
+    width: auto;
+    min-width: 15rem;
+  }
+}
+
+.quote-form__privacy {
+  margin: 1rem 0 0;
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+}
+
+/* Success state (replaces the form) --------------------------------------- */
+
+.quote-form--done {
+  border-radius: var(--radius-lg);
+  box-shadow: inset 0 0 0 2px var(--color-success);
+}
+
+.quote-form--done p {
+  margin: 0;
+  font-size: var(--text-lg);
+  color: var(--color-ink);
+}

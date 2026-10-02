@@ -1,0 +1,7 @@
+/* Industries We Serve page (src/pages/Industries.tsx). */
+
+/* Recurring requirements: two short columns from 40em (see .list--columns). */
+.industries-factors {
+  max-width: 40rem;
+  margin-top: 0.25rem;
+}

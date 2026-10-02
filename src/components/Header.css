@@ -1,0 +1,457 @@
+/* ==========================================================================
+   Site header (Header.tsx)
+
+   Below 64em: logo, persistent Request a Quote button and a Menu toggle;
+   the nav opens as a panel under the bar. From 64em: the full nav on one line,
+   ending in two pills (Request a Quote filled, Contact outlined).
+   Keep 64em in sync with DESKTOP_QUERY in Header.tsx.
+
+   Base styles are the no-JS layout (nav as a wrapped row under the bar).
+   `.js` (set on <html> before paint) collapses the nav behind the toggle.
+   ========================================================================== */
+
+/* No-JS narrow: the header grows to hold the nav row, so it scrolls away instead of sticking. */
+.site-header {
+  position: relative;
+  z-index: 100;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.js .site-header {
+  position: sticky;
+  top: 0;
+}
+
+.site-header__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 0.625rem;
+}
+
+/*
+ * Sets the bar's height (the first row, when the no-JS nav wraps below it).
+ * Takes the free space, so the wordmark wraps onto two lines before anything else gives way.
+ */
+.site-header__brand-wrap {
+  display: flex;
+  align-items: center;
+  flex: 1 0 auto; /* never narrower than the logo: the Request a Quote button gives way instead */
+  min-height: var(--header-height);
+}
+
+.site-header__brand {
+  display: block;
+  padding-block: 0.375rem;
+  border-radius: var(--radius);
+}
+
+/* Logo height per breakpoint, in px so a larger browser font size doesn't grow it; width
+   follows the artwork, and object-fit keeps the proportions if the box is ever squeezed. */
+.site-header__logo {
+  display: block;
+  width: auto;
+  max-width: none;
+  height: 36px;
+  object-fit: contain;
+  object-position: left center;
+}
+
+@media (min-width: 36em) {
+  .site-header__logo {
+    height: 44px;
+  }
+}
+
+.site-header__quote {
+  flex: none;
+  white-space: nowrap;
+}
+
+/* Current page on an accent button: underline, not colour alone. */
+:is(.site-header__quote, .site-nav__quote)[aria-current='page'] {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.25em;
+}
+
+/* Menu toggle: only with JS, only below 64em. */
+.site-header__toggle {
+  display: none;
+}
+
+.site-header__toggle-icon {
+  flex: none;
+  width: 1.375rem;
+  height: 1.375rem;
+}
+
+/* Nav: in the no-JS layout it's a full-width row under the bar. */
+.site-nav {
+  flex: 1 0 100%;
+}
+
+.site-nav__panel {
+  border-top: 1px solid var(--color-rule);
+  padding-block: 0.25rem;
+}
+
+.site-nav__list {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-nav__item {
+  max-width: none;
+}
+
+.site-nav__link {
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem;
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--color-ink);
+  text-decoration: none;
+  text-underline-offset: 0.4em;
+  white-space: nowrap;
+}
+
+.site-nav__link:hover {
+  color: var(--color-ink-hover);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+}
+
+.site-nav__link[aria-current='page'],
+.site-nav__link[aria-current='page']:hover {
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+}
+
+/* The bar button is always visible below 64em, so the nav's copy is hidden there. */
+.site-nav__item--accent {
+  display: none;
+}
+
+/* Tap-to-email / tap-to-call: only in the JS menu panel. */
+.site-header__contact {
+  display: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-header__contact li {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-height: 2.75rem;
+  max-width: none;
+  overflow-wrap: anywhere;
+}
+
+.site-header__contact-icon {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--color-muted);
+}
+
+.site-header__contact-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   Narrow screens with JS: collapsible panel
+   -------------------------------------------------------------------------- */
+
+@media (width < 64em) {
+  .js .site-header__bar {
+    flex-wrap: nowrap;
+  }
+
+  .js .site-nav {
+    flex: none;
+  }
+
+  .js .site-header__toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    margin-right: -0.5rem;
+    padding: 0.25rem 0.5rem;
+    border: 0;
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--color-ink);
+    font-family: var(--font-heading);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .js .site-header__toggle:hover,
+  .js .site-header__toggle[aria-expanded='true'] {
+    background: var(--color-surface);
+  }
+
+  .js .site-nav__panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    display: none;
+    max-height: calc(100vh - var(--header-height));
+    max-height: calc(100dvh - var(--header-height));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0.5rem var(--gutter) 1.5rem;
+    background: var(--color-bg);
+    border-top: 1px solid var(--color-rule);
+    border-bottom: 1px solid var(--color-rule);
+    box-shadow: 0 1rem 1.5rem -1rem rgb(3 47 86 / 0.35);
+  }
+
+  .js .site-nav__panel.is-open {
+    display: block;
+  }
+
+  .js .site-nav__list {
+    flex-direction: column;
+  }
+
+  .js .site-nav__link {
+    min-height: 3rem;
+    padding-block: 0.5rem;
+    border-bottom: 1px solid var(--color-rule);
+    font-size: 1.0625rem;
+    white-space: normal;
+  }
+
+  .js .site-header__contact {
+    display: block;
+    margin-top: 0.75rem;
+  }
+}
+
+/* Smallest screens: compact button, icon above the "Menu" label. */
+@media (width < 36em) {
+  /* May shrink and wrap (e.g. with user text-spacing overrides) so the Menu
+     toggle is never pushed off-screen. */
+  .site-header__quote {
+    flex: 0 1 auto;
+    min-width: 0;
+    padding-inline: 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.1;
+    white-space: normal;
+  }
+
+  .js .site-header__toggle {
+    flex-direction: column;
+    gap: 0.125rem;
+    margin-right: -0.375rem;
+    padding-inline: 0.375rem;
+    font-size: 0.8125rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Desktop: wordmark left, full nav right, one line
+   -------------------------------------------------------------------------- */
+
+@media (min-width: 64em) {
+  .site-header {
+    position: sticky;
+    top: 0;
+  }
+
+  .site-header__bar {
+    flex-wrap: nowrap;
+    column-gap: 1.5rem;
+  }
+
+  .site-header__logo {
+    height: 52px;
+  }
+
+  .site-header__quote {
+    display: none;
+  }
+
+  .site-nav {
+    flex: 0 1 auto;
+  }
+
+  .site-nav__panel {
+    border-top: 0;
+    padding-block: 0;
+  }
+
+  /* Wraps only as a last resort (e.g. a much wider fallback font). */
+  .site-nav__list {
+    justify-content: flex-end;
+    align-items: center;
+    column-gap: 0;
+    margin-right: -0.625rem;
+  }
+
+  .site-nav__link {
+    padding-inline: 0.625rem;
+  }
+
+  .site-nav__item--accent {
+    display: block;
+    margin-inline: 0.75rem;
+  }
+
+  /* Contact: outlined pill, like the secondary button. */
+  .site-nav__link--pill {
+    min-height: 2.5rem;
+    margin-right: 0.625rem;
+    padding-inline: 1.1rem;
+    border: 2px solid var(--color-brand);
+    border-radius: 999px;
+    font-size: 0.9375rem;
+  }
+
+  .site-nav__link--pill:hover {
+    background: var(--color-surface);
+    text-decoration: none;
+  }
+
+  .site-nav__link--pill[aria-current='page'],
+  .site-nav__link--pill[aria-current='page']:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.25em;
+  }
+}
+
+/* Windows high contrast (dark themes): keep the logo on a white plate so the navy wordmark stays visible. */
+@media (forced-colors: active) {
+  .site-header__brand {
+    forced-color-adjust: none;
+    padding-inline: 0.375rem;
+    background: #ffffff;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Theme toggle (ThemeToggle.tsx): sun / moon button
+   In the bar from 36em (after Contact on desktop); in the menu panel below
+   that, where the bar has no room. Needs JavaScript, so hidden without it.
+   -------------------------------------------------------------------------- */
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  flex: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 2px solid var(--color-brand);
+  border-radius: 999px;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.theme-toggle:hover {
+  background: var(--color-surface);
+}
+
+.theme-toggle__icon {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* The icon shows what the button switches to: a moon in the light theme, a sun in the dark one. */
+.theme-toggle__icon--sun,
+:root[data-theme='dark'] .theme-toggle__icon--moon {
+  display: none;
+}
+
+:root[data-theme='dark'] .theme-toggle__icon--sun {
+  display: block;
+}
+
+/* Labelled version in the mobile menu panel. */
+.theme-toggle--labelled {
+  width: auto;
+  height: auto;
+  min-height: 2.75rem;
+  padding: 0.35rem 1.1rem 0.35rem 0.8rem;
+}
+
+.no-js .theme-toggle,
+.site-header__theme {
+  display: none;
+}
+
+@media (min-width: 36em) {
+  .js .site-header__theme {
+    display: inline-flex;
+  }
+
+  .site-header__theme-row {
+    display: none !important;
+  }
+}
+
+/* Tablets: clear of the Menu button (which has a negative right margin). */
+@media (min-width: 36em) and (max-width: 63.99em) {
+  .site-header__theme {
+    margin-left: 0.625rem;
+  }
+}
+
+@media (min-width: 64em) {
+  /* Sits closer to the Contact pill than the bar's normal gap. */
+  .site-header__theme {
+    margin-left: -0.75rem;
+  }
+}
+
+/* Small desktops (1024–1200px): tighter nav spacing so the links, both pills and the
+   theme toggle stay on one line. */
+@media (min-width: 64em) and (max-width: 74.99em) {
+  .site-header__bar {
+    column-gap: 1rem;
+  }
+
+  .site-nav__link {
+    padding-inline: 0.45rem;
+  }
+
+  .site-nav__item--accent {
+    margin-inline: 0.5rem;
+  }
+
+  .site-header__theme {
+    margin-left: -0.375rem;
+  }
+}

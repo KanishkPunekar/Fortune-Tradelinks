@@ -1,0 +1,46 @@
+/**
+ * Site photos: brand/photos/<source> → public/images/<name>.webp, cropped to the slot's shape
+ * and sized at 2x its largest display size, plus <name>-640.webp for phones (used via srcset).
+ * Run with `npm run photos` after adding or replacing a photo, then point `images` in
+ * src/config/site.ts at the output files.
+ *
+ * Keep originals in brand/photos/ (not public/), so the full-size files aren't published.
+ */
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import sharp from 'sharp';
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const srcDir = path.join(root, 'brand', 'photos');
+const outDir = path.join(root, 'public', 'images');
+
+/**
+ * One entry per photo slot. Largest display sizes (CSS px): Home hero 558 x 544 (square-ish;
+ * cropped taller at 1024px and 16:10 on phones), Products 537 x 403 (4:3), Logistics 537 x 358 (3:2).
+ */
+const PHOTOS = [
+  { source: 'storage-tanks.png', output: 'home-hero.webp', width: 1200, height: 1200 },
+  { source: 'liquid-sample.png', output: 'products.webp', width: 1080, height: 810 },
+  { source: 'road-tanker.png', output: 'logistics.webp', width: 1080, height: 720 },
+];
+
+for (const photo of PHOTOS) {
+  const input = path.join(srcDir, photo.source);
+  if (!fs.existsSync(input)) {
+    console.warn(`  skipped ${photo.source}: not found in brand/photos/`);
+    continue;
+  }
+  const output = path.join(outDir, photo.output);
+  await sharp(input)
+    .resize(photo.width, photo.height, { fit: 'cover', position: 'centre', withoutEnlargement: true })
+    .webp({ quality: 80, effort: 6 })
+    .toFile(output);
+  const small = output.replace(/\.webp$/, '-640.webp');
+  await sharp(output).resize({ width: 640 }).webp({ quality: 80, effort: 6 }).toFile(small);
+  for (const file of [output, small]) {
+    const meta = await sharp(file).metadata();
+    const kb = (fs.statSync(file).size / 1024).toFixed(0);
+    console.log(`  ${photo.source.padEnd(20)} → public/images/${path.basename(file).padEnd(20)} ${meta.width}x${meta.height}, ${kb} KB`);
+  }
+}

@@ -1,0 +1,97 @@
+/* ==========================================================================
+   Products page (/products): the product presented as a specification sheet.
+   ========================================================================== */
+
+/* Product sheet: heavy top rule, as on the spec tables; image beside it on wide screens. */
+.products-sheet {
+  margin-top: 1.5rem;
+  padding-top: 2rem;
+  border-top: 2px solid var(--color-ink);
+}
+
+.products-sheet__title {
+  font-size: clamp(1.625rem, 1.25rem + 1.5vw, 2.25rem);
+}
+
+/* Narrow screens: a real photo shows after the specification; a placeholder would only
+   push it down, so it shows from 64em only. */
+@media (max-width: 63.99em) {
+  .products-sheet__aside:has(> .image-placeholder) {
+    display: none;
+  }
+}
+
+/* Supply Options / Product Information / Transportation as labelled, ruled rows. */
+.products-spec {
+  margin-top: 2rem;
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.products-spec__row {
+  padding-block: 1.25rem;
+  border-top: 1px solid var(--color-rule);
+}
+
+.products-spec__row > h3 {
+  margin: 0 0 0.5rem;
+  font-size: var(--text-lg);
+}
+
+.products-spec__body > :last-child {
+  margin-bottom: 0;
+}
+
+.products-spec .spec-table {
+  margin: 1.25rem 0 0;
+}
+
+@media (min-width: 40em) {
+  .products-spec__row {
+    display: grid;
+    grid-template-columns: minmax(0, 12rem) minmax(0, 1fr);
+    column-gap: 1.5rem;
+  }
+
+  .products-spec__row > h3 {
+    margin: 0;
+    padding-top: 0.15rem;
+  }
+}
+
+/* Need a Specific Quantity? ----------------------------------------------- */
+
+.products-quantity .table-wrap {
+  max-width: 46rem;
+}
+
+.products-quantity .spec-table {
+  margin: 0.25rem 0 1.5rem;
+}
+
+/* Product Availability ---------------------------------------------------- */
+
+.products-availability {
+  display: grid;
+  gap: 1.5rem 4rem;
+}
+
+@media (min-width: 48em) {
+  .products-availability {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    align-items: start;
+  }
+}
+
+.products-availability > p {
+  margin: 0;
+}
+
+.products-availability__contact {
+  padding-left: 1.25rem;
+  border-left: 2px solid var(--color-ink);
+  overflow-wrap: anywhere;
+}
+
+.products-availability__contact a {
+  font-weight: 600;
+}

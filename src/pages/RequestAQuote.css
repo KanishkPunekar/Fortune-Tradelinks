@@ -1,0 +1,98 @@
+/* ==========================================================================
+   Request a Quote page (/request-a-quote). The form sits high on the page:
+   a compact H1 band, then the form with "What Happens Next?" beside it
+   from 75em. Below that the side column follows the form.
+   ========================================================================== */
+
+/* Compact H1 panel so the form starts close to the top. */
+.quote-page .page-header__panel {
+  padding-block: clamp(1.5rem, 1rem + 2.5vw, 3rem);
+}
+
+.quote-page .page-header__intro {
+  max-width: 44rem;
+}
+
+/* "Looking for Bulk Ethanol?": a sub-heading of the intro, not a section title. */
+.quote-intro__title {
+  margin: 0 0 0.35rem;
+  font-size: clamp(1.1875rem, 1.05rem + 0.5vw, 1.375rem);
+  font-weight: 600;
+}
+
+/* Less space above the form than a regular section. */
+.quote-main {
+  padding-top: clamp(2rem, 1.5rem + 2vw, 3rem);
+}
+
+.quote-layout__form,
+.quote-layout__aside {
+  min-width: 0;
+}
+
+.quote-layout__form > h2 {
+  margin-bottom: 1rem;
+}
+
+/* Side column ------------------------------------------------------------- */
+
+.quote-aside__block > h2 {
+  margin-bottom: 0.25rem;
+  font-size: clamp(1.375rem, 1.2rem + 0.6vw, 1.625rem);
+}
+
+.quote-aside .process-steps {
+  margin: 0;
+}
+
+.quote-aside .process-steps--stack .process-steps__item:last-child {
+  padding-bottom: 0;
+}
+
+.quote-aside__email {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--color-ink);
+}
+
+.quote-aside__email > h2 {
+  margin-bottom: 0.6rem;
+}
+
+.quote-aside__email-link {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.quote-aside__mention-label {
+  margin-bottom: 0.25rem;
+}
+
+.quote-aside__email .inline-list {
+  --inline-list-sep: 1.1em;
+  margin: 0;
+}
+
+/*
+ * Stacked below 75em: the steps follow the form after a rule. Between 64em and
+ * 75em a side-by-side form column would be too narrow for its paired fields.
+ */
+@media (max-width: 74.99em) {
+  .quote-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .quote-layout__aside {
+    padding-top: clamp(2rem, 1.5rem + 3vw, 3rem);
+    border-top: 1px solid var(--color-rule);
+  }
+}
+
+/* Side by side: a full-height rule between the form and the side column. */
+@media (min-width: 75em) {
+  .quote-layout__aside {
+    align-self: stretch;
+    padding-left: clamp(1.5rem, 3vw, 2.5rem);
+    border-left: 1px solid var(--color-rule);
+  }
+}

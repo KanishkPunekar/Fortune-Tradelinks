@@ -1,0 +1,86 @@
+/* ==========================================================================
+   Contact page (/contact). Intro and buttons beside the contact details
+   table from 64em (see .split); stacked below that.
+   ========================================================================== */
+
+.contact-intro > * {
+  min-width: 0;
+}
+
+/* Contact details table ---------------------------------------------------- */
+
+.contact-details .spec-table {
+  margin: 0;
+}
+
+.contact-details .spec-table th {
+  width: 36%;
+}
+
+/* Long email addresses must never widen the table past a phone screen. */
+.contact-details .spec-table td {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 29.99em) {
+  .contact-details .spec-table th {
+    width: 7.25rem;
+    font-size: 1rem;
+  }
+
+  .contact-details .spec-table td {
+    font-size: 1rem;
+  }
+}
+
+/* Click-to-load map (only when site.showMap is on and the address is real). */
+.contact-map {
+  margin-top: 1.5rem;
+  aspect-ratio: 4 / 3;
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+.contact-map__placeholder {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  padding: 1rem;
+}
+
+.contact-map__frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* Send Us Your Requirement ------------------------------------------------ */
+
+.contact-include {
+  max-width: 44rem;
+  margin-block: 0.25rem 1.5rem;
+}
+
+/* Closing block at the end of the page. */
+.contact-closing {
+  margin-top: clamp(3rem, 2rem + 3vw, 4.5rem);
+  padding-top: clamp(2rem, 1.5rem + 2vw, 3rem);
+  border-top: 1px solid var(--color-rule);
+}
+
+.contact-closing > p + p {
+  margin-top: 0.15rem;
+}
+
+.contact-closing__name {
+  font-size: var(--text-h3);
+  font-weight: 700;
+}
+
+.contact-closing__tagline {
+  color: var(--color-muted);
+  font-weight: 600;
+}

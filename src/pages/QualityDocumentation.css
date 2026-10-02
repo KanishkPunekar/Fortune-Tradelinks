@@ -1,0 +1,60 @@
+/* ==========================================================================
+   Quality & Documentation page (/quality-documentation).
+   ========================================================================== */
+
+/* Product / Commercial Documentation: two lists side by side from 48em,
+   each under a heavy rule, like the specification tables. */
+@media (min-width: 48em) {
+  .quality-docs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 0;
+  }
+
+  /* Subgrid rows: heading, lead-in and list line up across the pair even when one heading wraps. */
+  .quality-docs__group {
+    display: grid;
+    grid-row: span 3;
+    grid-template-rows: subgrid;
+    align-content: start;
+  }
+}
+
+.quality-docs__group {
+  padding-top: 1.1rem;
+  border-top: 2px solid var(--color-ink);
+}
+
+.quality-docs__group > h2 {
+  margin-bottom: 0.5em;
+}
+
+.quality-docs__group > .list {
+  margin-top: 0.25rem;
+}
+
+/* Documentation Matters: statement + where to send requirements. */
+.quality-matters {
+  display: grid;
+  gap: 1.5rem 4rem;
+}
+
+@media (min-width: 48em) {
+  .quality-matters {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    align-items: start;
+  }
+}
+
+.quality-matters > p {
+  margin: 0;
+}
+
+.quality-matters__contact {
+  padding-left: 1.25rem;
+  border-left: 2px solid var(--color-ink);
+  overflow-wrap: anywhere;
+}
+
+.quality-matters__contact a {
+  font-weight: 600;
+}

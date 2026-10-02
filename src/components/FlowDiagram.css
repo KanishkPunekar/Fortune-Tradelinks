@@ -1,0 +1,184 @@
+/* ==========================================================================
+   FlowDiagram: the signature step-flow visual (Brief Section 5)
+
+   .flow-diagram > .flow-diagram__frame > ol.flow-diagram__list
+     > li.flow-diagram__step > .flow-diagram__node + .flow-diagram__label
+
+   Every step except the last draws the track segment (::before) and the
+   arrowhead (::after) that lead into the next node. All decorative.
+
+   Layout switch, no JavaScript: .flow-diagram__frame is the query container
+   and is exactly one step wide (100% / --flow-steps); the list inside is
+   widened back to the full width. So a single container query on the width
+   available to one step works for any step count, on any page column. The
+   threshold is in em (the label size), so the compact size switches earlier.
+   Below it: vertical, track down the left. At or above it: horizontal.
+   ========================================================================== */
+
+.flow-diagram {
+  --flow-node: 1.5rem; /* node diameter */
+  --flow-ring: 3px; /* navy ring around the green node */
+  --flow-track: 3px; /* line weight */
+  --flow-arrow-length: 0.875rem;
+  --flow-arrow-width: 0.75rem;
+  --flow-arrow-gap: 0.3125rem; /* arrow tip to the next node */
+  --flow-label-gap: 0.875rem; /* node to label */
+  --flow-rung: 2.5rem; /* vertical: space below each label */
+  --flow-line-height: 1.3;
+  margin: 2rem 0;
+  font-size: 1.125rem;
+  overflow-x: clip; /* guards sub-pixel rounding of the widened list */
+}
+
+.flow-diagram--compact {
+  --flow-node: 1rem;
+  --flow-ring: 2px;
+  --flow-track: 2px;
+  --flow-arrow-length: 0.6875rem;
+  --flow-arrow-width: 0.625rem;
+  --flow-arrow-gap: 0.25rem;
+  --flow-label-gap: 0.75rem;
+  --flow-rung: 1.875rem;
+  font-size: 0.9375rem;
+}
+
+.flow-diagram__frame {
+  container: flow-diagram / inline-size;
+  width: calc(100% / var(--flow-steps, 4));
+}
+
+.flow-diagram__list {
+  width: calc(100% * var(--flow-steps, 4));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Vertical (default) ----------------------------------------------------- */
+
+.flow-diagram__step {
+  /* Centres the node on the first line of its label. */
+  --flow-node-top: calc((var(--flow-line-height) * 1em - var(--flow-node)) / 2);
+  position: relative;
+  max-width: none;
+  padding: 0 0 var(--flow-rung) calc(var(--flow-node) + var(--flow-label-gap));
+}
+
+.flow-diagram__step:last-child {
+  padding-bottom: 0;
+}
+
+.flow-diagram__node {
+  position: absolute;
+  z-index: 1;
+  top: var(--flow-node-top);
+  left: 0;
+  width: var(--flow-node);
+  height: var(--flow-node);
+  background: var(--color-accent);
+  border: var(--flow-ring) solid var(--color-ink);
+  border-radius: 50%;
+}
+
+.flow-diagram__label {
+  display: block;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  line-height: var(--flow-line-height);
+  color: var(--color-ink);
+  overflow-wrap: break-word;
+}
+
+.flow-diagram__step:not(:last-child)::before,
+.flow-diagram__step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  background: var(--color-ink);
+}
+
+/* Track: from under this node's centre down to the arrowhead. */
+.flow-diagram__step:not(:last-child)::before {
+  top: calc(var(--flow-node-top) + var(--flow-node) / 2);
+  bottom: calc(var(--flow-arrow-gap) + var(--flow-arrow-length) - 1px - var(--flow-node-top));
+  left: calc((var(--flow-node) - var(--flow-track)) / 2);
+  width: var(--flow-track);
+}
+
+/* Arrowhead pointing down, its tip just short of the next node. */
+.flow-diagram__step:not(:last-child)::after {
+  bottom: calc(var(--flow-arrow-gap) - var(--flow-node-top));
+  left: calc((var(--flow-node) - var(--flow-arrow-width)) / 2);
+  width: var(--flow-arrow-width);
+  height: var(--flow-arrow-length);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+
+/* Horizontal: one track, nodes evenly spaced, labels centred below --------
+   8.5em per step fits the longest single word in the copy ("Transportation",
+   6.75em in Archivo 600) plus 1em between neighbours; longer labels wrap. */
+
+@container flow-diagram (min-width: 8.5em) {
+  .flow-diagram__list {
+    display: grid;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
+  }
+
+  .flow-diagram__step {
+    padding: calc(var(--flow-node) + var(--flow-label-gap)) 0.5em 0;
+    text-align: center;
+  }
+
+  .flow-diagram__node {
+    top: 0;
+    left: calc(50% - var(--flow-node) / 2);
+  }
+
+  /* The next node's centre sits one column (100%) to the right: -50% here. */
+  .flow-diagram__step:not(:last-child)::before {
+    top: calc((var(--flow-node) - var(--flow-track)) / 2);
+    right: calc(var(--flow-node) / 2 + var(--flow-arrow-gap) + var(--flow-arrow-length) - 1px - 50%);
+    bottom: auto;
+    left: 50%;
+    width: auto;
+    height: var(--flow-track);
+  }
+
+  .flow-diagram__step:not(:last-child)::after {
+    top: calc((var(--flow-node) - var(--flow-arrow-width)) / 2);
+    right: calc(var(--flow-node) / 2 + var(--flow-arrow-gap) - 50%);
+    bottom: auto;
+    left: auto;
+    width: var(--flow-arrow-length);
+    height: var(--flow-arrow-width);
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+  }
+}
+
+/* Keep the track visible in Windows high-contrast mode and in print. ------ */
+
+.flow-diagram__node,
+.flow-diagram__step::before,
+.flow-diagram__step::after {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+@media (forced-colors: active) {
+  .flow-diagram__node,
+  .flow-diagram__step::before,
+  .flow-diagram__step::after {
+    forced-color-adjust: none;
+  }
+
+  .flow-diagram__node {
+    background: Canvas;
+    border-color: CanvasText;
+  }
+
+  /* Same specificity as the base track/arrow rules, so these win. */
+  .flow-diagram__step:not(:last-child)::before,
+  .flow-diagram__step:not(:last-child)::after {
+    background: CanvasText;
+  }
+}

@@ -1,0 +1,132 @@
+# Fortune Tradelinks website
+
+Company website for fortunetradelinks.in. React 19 + TypeScript + Vite, with every page prerendered to static HTML at build time, so each page's content is readable with JavaScript turned off. JavaScript only adds the mobile menu and the quote form behaviour.
+
+`PROJECT_BRIEF.md` is the source of truth for structure, copy and content rules.
+
+## Commands
+
+```sh
+npm install        # once
+npm run dev        # local dev server with hot reload (http://localhost:5173)
+npm run build      # type-check, build, prerender → dist/
+npm run preview    # serve dist/ locally to check the production build
+```
+
+## Where things live
+
+| What | File |
+|---|---|
+| Contact details, placeholders, optional content switches | `src/config/site.ts` |
+| Page list, SEO titles and descriptions, navigation | `src/config/pages.ts` |
+| Design tokens (colours, fonts, spacing) | `src/styles/global.css` |
+| Shared components | `src/components/` |
+| Pages | `src/pages/` |
+| Prerender, sitemap.xml, robots.txt | `scripts/prerender.mjs` |
+| Logo artwork (source) | `brand/logo-source.png` |
+| Logo, favicons and share image (generated) | `public/images/`, `public/favicon*`, `public/apple-touch-icon.png` |
+| Brand asset generator | `scripts/make-brand-assets.mjs` (`npm run brand`) |
+
+### Placeholders
+
+Any value in `src/config/site.ts` written in `[SQUARE BRACKETS]` is a placeholder. It shows on the site as highlighted plain text so it's easy to spot in review, and it's never turned into a phone or map link. Replace it with the real value and every page updates.
+
+Optional content that is off until the owner confirms it:
+
+- `optionalContent.typicalQuantities`: the "Typical Requirements We Handle" block on Ethanol Supply.
+- `optionalContent.productSpecification`: the specification table on Products. Rows appear as values are filled in.
+- `site.gstin`: shows a GSTIN line in the footer and on Compliance when set.
+- `site.showMap`: a click-to-load map on Contact, once a real address is set.
+
+## Logo and photos
+
+The logo is cut out of `brand/logo-source.png` (the supplied artwork on black) onto a transparent background. `npm run brand` regenerates the header logo, favicons and share image from that file. If the artwork changes, replace the file, run `npm run brand`, then set `logo.width` and `logo.height` in `src/config/site.ts` to the size the script prints. The script's crop positions are for the current artwork. A vector (SVG) version of the logo would be sharper still, if one exists.
+
+Photos are set in `images` in `src/config/site.ts`: the Home hero, Products and Logistics. All three are in place.
+
+The original files are kept in `brand/photos/`, outside `public/`, so the full-size versions are never published. `npm run photos` crops each one to its slot and saves compressed WebP files in `public/images/`, plus a 640px version for phones. To replace a photo:
+
+1. Put the new file in `brand/photos/` with the same name: `storage-tanks.png`, `liquid-sample.png` or `road-tanker.png`.
+2. Run `npm run photos`.
+3. Update the `alt` text in `src/config/site.ts` if the photo shows something different.
+
+To add a new photo slot, add it to `PHOTOS` in `scripts/optimize-photos.mjs`.
+
+An empty `src` shows a clearly marked placeholder instead. On phones, placeholders are hidden so they don't push the text down; real photos show below the text. Use neutral industrial imagery only, with no third-party branding.
+
+### Photo checklist
+
+| Slot | What to show | Shape and minimum size | Search terms |
+|---|---|---|---|
+| Home hero (`images.homeHero`) | A row of large white or steel storage tanks at a bulk liquid / fuel terminal, in daylight. Clean, calm and wide. | Square or 4:5 upright, at least 1400 × 1400 px. Cropped to fill: roughly square on desktop, tall at 1024px, 16:10 on phones. Keep the tanks in the centre. | storage tank farm, bulk liquid terminal, fuel storage tanks, industrial tanks daylight |
+| Products (`images.products`) | Close-up of a clear, colourless liquid sample in a glass laboratory bottle or flask, on a clean light background. | Landscape 4:3, at least 1200 × 900 px. Shown on screens 1024px and wider. | clear liquid sample bottle, laboratory flask clear liquid, fuel sample testing, chemical sample bottle |
+| Logistics (`images.logistics`) | A road tanker truck with a plain, unbranded tank, on a highway or at a loading point, side or three-quarter view, in daylight. | Landscape 3:2, at least 1200 × 800 px. Shown on screens 1024px and wider. | tanker truck highway, fuel tanker truck side view, road tanker loading gantry, tank truck depot |
+
+For every photo:
+
+- **Avoid:** company names or logos (on tanks, trucks, uniforms or signs), readable number plates, recognisable plants or depots that could look like they're yours, flames or spills, and text in the image.
+- **Licence:** only use photos you're allowed to use commercially. Free options are Unsplash, Pexels and Pixabay; paid options are Shutterstock, Adobe Stock and iStock. Don't copy photos from Google Images.
+- **File:** any size at or above the minimum, PNG or JPG. Save it in `brand/photos/` and run `npm run photos`, which does the cropping and compression.
+
+## Light and dark theme
+
+The sun/moon button in the header switches between the light and dark themes. It sits after Contact on desktop and beside Menu on tablets; on small phones it is inside the menu.
+
+- **Default:** light, for every visitor, whatever their system setting. If a visitor switches to dark, the choice is remembered in their browser (`localStorage` key `ft-theme`).
+- **No flash:** a small script in `index.html` applies the theme before the page appears.
+- **Without JavaScript:** the site stays light and the button is hidden.
+- **Colours:** both sets are in `src/styles/global.css`, the light tokens under `:root` and the dark ones under `:root[data-theme='dark']`. The logo has a dark-theme version, `public/images/logo-dark.png`, with the navy wordmark in white; `npm run brand` makes it.
+
+## Build output
+
+`npm run build` writes plain static files to `dist/`: one HTML file per page (`index.html`, `about-us.html`, …), `404.html`, `sitemap.xml`, `robots.txt` and hashed assets. Any static host can serve them if it maps `/about-us` to `about-us.html` and serves `404.html` for unknown paths. Most static hosts do both by default.
+
+## Request a Quote form
+
+The form POSTs JSON to `site.formEndpoint`. While that's empty:
+
+- In `npm run dev`, submissions are logged to the browser console, the success message shows, and a dev-only banner says the form isn't connected.
+- In a production build, the form shows its error message with the sales email address, so no enquiry is silently lost. The build prints a warning.
+
+Connect it to a real endpoint and test it end to end before launch (see `PROJECT_BRIEF.md` Section 13).
+
+## Owner review before launch
+
+The full checklist is in `PROJECT_BRIEF.md` Section 13. Beyond the placeholders above, these need a decision.
+
+**Proposed copy (text not in the original plan):**
+
+- The **[PROPOSED COPY]** items from the brief: page titles and meta descriptions, the 404 page, the form's error, success and privacy lines.
+- **Form:**
+  - Remaining field error messages ("Enter the contact person's name.", "Enter a valid email address.", "Enter the delivery location.", "Choose today or a later date.", "Select whether transportation is required.", "Select whether this is a recurring requirement.", "Enter the expected delivery frequency.", "Select a product.").
+  - " (optional)" after the three optional labels.
+  - Frequency hint "e.g. Weekly, 2 loads per month".
+  - The no-JavaScript note "This form needs JavaScript to send. You can also email your requirement to sales@fortunetradelinks.in."
+  - The dev-only "not connected" banner, which never appears on the live site.
+- **Header and accessibility:** "Menu" on the mobile menu button, "Skip to content", and the "Main" navigation label.
+- **Contact map:** "Show map" and the map title. These appear only if `showMap` is turned on.
+- **Products:** caption "Anhydrous Denatured Ethanol specification". It appears only once specification data is filled in.
+- **Theme button:** the name "Dark theme" (the label in the mobile menu, and announced by screen readers) and the tooltips "Switch to dark theme" / "Switch to light theme".
+- **Photo alt text** (read out by screen readers): "Large white storage tanks at a bulk liquid terminal", "Clear, colourless liquid sample in a glass laboratory flask" and "Road tanker truck on a highway".
+- **Breadcrumbs and share image:** the "Breadcrumb" navigation label, the short page names used in it (e.g. "About Us"), and the share-image alt text "Fortune Tradelinks logo".
+
+**Decisions:**
+
+- "Required Delivery Date (optional)" reads awkwardly. Keep it, or rename the field?
+- The design follows the two reference sites and uses the logo's colours. This replaces the amber accent suggested in the brief (Section 5):
+  - Headings are logo navy.
+  - Enquiry buttons (Request a Quote, Enquire Now, Submit Requirement) are filled green pills.
+  - Other buttons (Contact Us, Email Us, Go to Home) are white pills with a green outline.
+  - Inner pages open with a breadcrumb and a rounded green title panel.
+- The logo's slogan line ("SUSTAINABLE ENERGY | STRONGER TOMORROW") is left off the site. It is a claim, and the brief (Section 4) avoids unverifiable claims. The "ETHANOL SUPPLY & TRADING" line appears only on the share image, because it is too small to read in the header. Approve either if you want them used.
+- The image placeholders on Home, Products and Logistics need real, neutral industrial images: no third-party branding or logos.
+- `public/images/og-default.png` (the link-preview image) is the logo on white.
+- Organization structured data now includes the logo alongside name, URL and email. The brief listed name, URL and email only, to avoid placeholders; the logo is real.
+- Industries is linked only from the footer's "More" column.
+
+**Hosting notes:**
+
+- Serve `/assets/*` with a long cache lifetime (the file names are hashed) and HTML with `no-cache`.
+- Enable gzip or brotli compression.
+- Serve `404.html` with a 404 status.
+- If you add a Content-Security-Policy, the small inline script in the page head needs a hash.

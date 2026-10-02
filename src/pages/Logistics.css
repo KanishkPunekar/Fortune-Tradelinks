@@ -1,0 +1,31 @@
+/* ==========================================================================
+   Logistics & Transportation page (/logistics).
+   ========================================================================== */
+
+/* Intro: copy + photo, side by side from 64em. Narrow screens: a real photo shows under the
+   copy; a placeholder would only push the copy down, so it shows from 64em only. */
+@media (max-width: 63.99em) {
+  .logistics-intro__aside:has(> .image-placeholder) {
+    display: none;
+  }
+}
+
+@media (min-width: 64em) {
+  .logistics-intro {
+    align-items: start;
+  }
+}
+
+/* Supply Chain: the signature flow diagram, given room on its own band. */
+.logistics-chain__flow {
+  margin-block: clamp(0.5rem, 0.25rem + 1vw, 1rem) clamp(2.5rem, 1.75rem + 2.5vw, 3.75rem);
+}
+
+/* Bulk Delivery Requirements band: list markers need to read on navy. */
+.logistics-delivery__list {
+  margin-top: 0.25rem;
+}
+
+.on-dark .logistics-delivery__list li::marker {
+  color: var(--color-on-dark-muted);
+}

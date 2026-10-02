@@ -1,0 +1,33 @@
+/* Privacy Policy and Terms & Conditions (src/pages/LegalPage.tsx). */
+
+/* "Last Updated" line directly under the H1: quieter than a page intro. */
+.legal .legal__updated {
+  margin: 0;
+  font-size: var(--text-base);
+}
+
+/* One readable column, left-aligned with the H1. */
+.legal__body {
+  max-width: var(--measure);
+  overflow-wrap: break-word;
+}
+
+/* H2 sections: smaller than page-level H2s, with room above each one. */
+.legal__body h2 {
+  margin: clamp(2.25rem, 1.75rem + 1.5vw, 3rem) 0 0.75rem;
+  font-size: clamp(1.3125rem, 1.15rem + 0.6vw, 1.5rem);
+}
+
+.legal__body > :first-child {
+  margin-top: 0;
+}
+
+.legal__body > :last-child,
+.legal__contact > :last-child {
+  margin-bottom: 0;
+}
+
+/* Contact block: email, then name and address on separate lines. */
+.legal__contact {
+  font-style: normal;
+}

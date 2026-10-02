@@ -1,0 +1,40 @@
+/* About Us page (src/pages/AboutUs.tsx). */
+
+/* Intro: compact flow diagram under the text, full width so it runs
+   horizontally on desktop and vertically only on narrow screens. */
+.about-intro__flow {
+  max-width: 48rem;
+}
+
+/* The diagram is the section's last element; its margin would otherwise collapse through the wrapper. */
+.about-intro__flow .flow-diagram {
+  margin-bottom: 0;
+}
+
+/* What We Do: two short columns from 40em (see .list--columns), kept
+   close together and clear of the closing sentence. */
+.about-activities {
+  max-width: 44rem;
+  margin-block: 0.25rem 1.5rem;
+}
+
+/* Vision and Mission: two statements side by side, each under a rule. */
+.about-purpose__item {
+  padding-top: 1.1rem;
+  border-top: 2px solid var(--color-ink);
+}
+
+.about-purpose__item > h2 {
+  margin-bottom: 0.5em;
+}
+
+.about-purpose__item > p {
+  margin: 0;
+}
+
+/* Closing line at the end of the page. */
+.about-closing {
+  margin-top: clamp(3rem, 2rem + 3vw, 4.5rem);
+  padding-top: clamp(2rem, 1.5rem + 2vw, 3rem);
+  border-top: 1px solid var(--color-rule);
+}
