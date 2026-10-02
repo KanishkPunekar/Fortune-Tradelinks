@@ -27,9 +27,10 @@ export interface SiteConfig {
   legalLastUpdated: string;
   /**
    * Request a Quote submission target. The form POSTs JSON here.
-   * Empty = not connected: the dev server logs the payload and shows a
-   * "not connected" banner; a production build shows the error state
-   * (with the sales email) instead of discarding the submission.
+   * "/api/quote" is the Vercel Function in api/quote.ts, which emails each quote to the
+   * sales team (it needs RESEND_API_KEY; see the README). Empty = not connected: the dev
+   * server logs the payload and shows a "not connected" banner, and a production build
+   * shows the error state (with the sales email) instead of discarding the submission.
    */
   formEndpoint: string;
 }
@@ -46,7 +47,7 @@ export const site: SiteConfig = {
   gstin: '',
   showMap: false,
   legalLastUpdated: '[DATE]',
-  formEndpoint: '',
+  formEndpoint: '/api/quote',
 };
 
 export interface SiteImageSource {

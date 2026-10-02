@@ -4,6 +4,22 @@ import { Link } from 'react-router';
 import { pages } from '../config/pages';
 import { site } from '../config/site';
 import { cx } from '../lib/cx';
+import {
+  FIELD_ORDER,
+  INITIAL_VALUES,
+  MAX_LENGTHS,
+  PRODUCT_OPTIONS,
+  localDateString,
+  toPayload,
+  validate,
+  type Choice,
+  type FieldName,
+  type QuoteErrors,
+  type QuotePayload,
+  type QuoteValues,
+  type ValidationContext,
+  type YesNo,
+} from '../lib/quote';
 import { EmailLink } from './ContactValues';
 import './QuoteForm.css';
 
@@ -16,178 +32,18 @@ import './QuoteForm.css';
  * frequency field, and a JSON POST through submitQuote().
  */
 
-/** Options for "Product Required". Add a product only once the owner confirms it is supplied. */
-const PRODUCT_OPTIONS: readonly string[] = ['Anhydrous Denatured Ethanol'];
-
-type Choice = '' | 'yes' | 'no';
-type YesNo = Exclude<Choice, ''>;
+type TextFieldName = Exclude<FieldName, 'transport_required' | 'recurring'>;
 
 const YES_NO: { value: YesNo; label: string }[] = [
   { value: 'yes', label: 'Yes' },
   { value: 'no', label: 'No' },
 ];
 
-interface QuoteValues {
-  company: string;
-  contact_name: string;
-  mobile: string;
-  email: string;
-  product: string;
-  quantity_kl: string;
-  specification: string;
-  delivery_location: string;
-  delivery_date: string;
-  transport_required: Choice;
-  recurring: Choice;
-  frequency: string;
-  notes: string;
-}
-
-type FieldName = keyof QuoteValues;
-type TextFieldName = Exclude<FieldName, 'transport_required' | 'recurring'>;
-type QuoteErrors = Partial<Record<FieldName, string>>;
-
-/** Field names in DOM order: the first invalid one receives focus. */
-const FIELD_ORDER: FieldName[] = [
-  'company',
-  'contact_name',
-  'mobile',
-  'email',
-  'product',
-  'quantity_kl',
-  'specification',
-  'delivery_location',
-  'delivery_date',
-  'transport_required',
-  'recurring',
-  'frequency',
-  'notes',
-];
-
-const INITIAL_VALUES: QuoteValues = {
-  company: '',
-  contact_name: '',
-  mobile: '',
-  email: '',
-  product: PRODUCT_OPTIONS[0],
-  quantity_kl: '',
-  specification: '',
-  delivery_location: '',
-  delivery_date: '',
-  transport_required: '',
-  recurring: 'no',
-  frequency: '',
-  notes: '',
-};
-
-/** Inline error messages [PROPOSED COPY]. Each names the fix. */
-const MESSAGES = {
-  company: 'Enter your company name.',
-  contact_name: "Enter the contact person's name.",
-  mobile: 'Enter a 10-digit mobile number.',
-  email: 'Enter a valid email address.',
-  product: 'Select a product.',
-  quantity_kl: 'Enter a quantity greater than 0.',
-  delivery_location: 'Enter the delivery location.',
-  delivery_date: 'Choose today or a later date.',
-  transport_required: 'Select whether transportation is required.',
-  recurring: 'Select whether this is a recurring requirement.',
-  frequency: 'Enter the expected delivery frequency.',
-} satisfies QuoteErrors;
-
 /** Native no-JS check for the mobile number: optional +91 or 0, then 10 digits; spaces and dashes allowed. */
 const MOBILE_PATTERN = String.raw`[\s\-]*(\+91|0)?([\s\-]*[0-9]){10}[\s\-]*`;
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 /** Give up on a hung endpoint and show the error state. */
 const SUBMIT_TIMEOUT_MS = 20000;
-
-/** "+91" plus the 10 digits, or null when the number isn't valid. */
-function normaliseMobile(value: string): string | null {
-  const match = /^(?:\+91|0)?(\d{10})$/.exec(value.replace(/[\s-]/g, ''));
-  return match ? `+91${match[1]}` : null;
-}
-
-/** Local calendar date as YYYY-MM-DD (the format of a date input's value). */
-function localDateString(date: Date): string {
-  const pad = (n: number) => String(n).padStart(2, '0');
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
-}
-
-interface ValidationContext {
-  /** Today's local date (YYYY-MM-DD); empty until known in the browser. */
-  today: string;
-  /** The date input holds a partly typed date the browser can't read. */
-  dateIncomplete: boolean;
-}
-
-/** Pure validation: field name → error message for every invalid field. */
-function validate(v: QuoteValues, ctx: ValidationContext): QuoteErrors {
-  const errors: QuoteErrors = {};
-  if (!v.company.trim()) errors.company = MESSAGES.company;
-  if (!v.contact_name.trim()) errors.contact_name = MESSAGES.contact_name;
-  if (!normaliseMobile(v.mobile)) errors.mobile = MESSAGES.mobile;
-  if (!EMAIL_PATTERN.test(v.email.trim())) errors.email = MESSAGES.email;
-  if (!PRODUCT_OPTIONS.includes(v.product)) errors.product = MESSAGES.product;
-
-  const quantity = Number(v.quantity_kl);
-  if (!v.quantity_kl.trim() || !Number.isFinite(quantity) || quantity <= 0) {
-    errors.quantity_kl = MESSAGES.quantity_kl;
-  }
-
-  if (!v.delivery_location.trim()) errors.delivery_location = MESSAGES.delivery_location;
-
-  const date = v.delivery_date;
-  if (ctx.dateIncomplete || (date && (!DATE_PATTERN.test(date) || (ctx.today !== '' && date < ctx.today)))) {
-    errors.delivery_date = MESSAGES.delivery_date;
-  }
-
-  if (!v.transport_required) errors.transport_required = MESSAGES.transport_required;
-  if (!v.recurring) errors.recurring = MESSAGES.recurring;
-  if (v.recurring === 'yes' && !v.frequency.trim()) errors.frequency = MESSAGES.frequency;
-  return errors;
-}
-
-/** JSON body sent to site.formEndpoint. Keys match the form field names. */
-interface QuotePayload {
-  company: string;
-  contact_name: string;
-  /** "+91" followed by the 10-digit number. */
-  mobile: string;
-  email: string;
-  product: string;
-  quantity_kl: number;
-  specification: string;
-  delivery_location: string;
-  /** YYYY-MM-DD, or "" when not given. */
-  delivery_date: string;
-  transport_required: YesNo;
-  recurring: YesNo;
-  /** Present only when recurring is "yes". */
-  frequency?: string;
-  notes: string;
-}
-
-/** Build the payload from values that have passed validate(). */
-function toPayload(v: QuoteValues): QuotePayload {
-  const recurring = v.recurring as YesNo;
-  return {
-    company: v.company.trim(),
-    contact_name: v.contact_name.trim(),
-    mobile: normaliseMobile(v.mobile) ?? v.mobile.trim(),
-    email: v.email.trim(),
-    product: v.product,
-    quantity_kl: Number(v.quantity_kl),
-    specification: v.specification.trim(),
-    delivery_location: v.delivery_location.trim(),
-    delivery_date: v.delivery_date,
-    transport_required: v.transport_required as YesNo,
-    recurring,
-    ...(recurring === 'yes' ? { frequency: v.frequency.trim() } : {}),
-    notes: v.notes.trim(),
-  };
-}
 
 /**
  * INTEGRATION POINT: the only place the form talks to a backend.
@@ -449,6 +305,7 @@ export function QuoteForm({ labelledBy }: QuoteFormProps) {
     value: values[name],
     onChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => change(name, e.target.value),
     onBlur: () => blur(name),
+    maxLength: MAX_LENGTHS[name],
     'aria-invalid': errors[name] ? true : undefined,
     'aria-describedby': errors[name] ? `${fieldId(name)}-error` : undefined,
   });

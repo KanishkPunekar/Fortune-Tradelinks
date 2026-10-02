@@ -23,6 +23,10 @@ npm run preview    # serve dist/ locally to check the production build
 | Shared components | `src/components/` |
 | Pages | `src/pages/` |
 | Prerender, sitemap.xml, robots.txt | `scripts/prerender.mjs` |
+| Quote form server function (emails each quote) | `api/quote.ts` |
+| Quote fields and validation rules (shared by form and server) | `src/lib/quote.ts` |
+| Vercel settings | `vercel.json` |
+| Environment variables template | `.env.example` |
 | Logo artwork (source) | `brand/logo-source.png` |
 | Logo, favicons and share image (generated) | `public/images/`, `public/favicon*`, `public/apple-touch-icon.png` |
 | Brand asset generator | `scripts/make-brand-assets.mjs` (`npm run brand`) |
@@ -83,12 +87,37 @@ The sun/moon button in the header switches between the light and dark themes. It
 
 ## Request a Quote form
 
-The form POSTs JSON to `site.formEndpoint`. While that's empty:
+The form posts to `/api/quote`: a Vercel Function in `api/quote.ts`, deployed with the site. It checks every field again with the same rules as the browser (`src/lib/quote.ts`), drops spam that fills the hidden trap field, and emails the quote to the sales team through [Resend](https://resend.com). Reply-To is set to the buyer, so the sales team can simply reply. Visitors without JavaScript get a plain confirmation page.
 
-- In `npm run dev`, submissions are logged to the browser console, the success message shows, and a dev-only banner says the form isn't connected.
-- In a production build, the form shows its error message with the sales email address, so no enquiry is silently lost. The build prints a warning.
+If an email can't be sent (missing key, Resend refuses it, network error), the visitor sees the error message with the sales email, and the full quote is written to the function's log (Vercel → Project → Logs), so it isn't lost.
 
-Connect it to a real endpoint and test it end to end before launch (see `PROJECT_BRIEF.md` Section 13).
+### Going live on Vercel
+
+The full step-by-step guide is in [`docs/deploy-on-vercel.md`](docs/deploy-on-vercel.md). It covers how the form works, a form-service alternative, hosting, and connecting the domain. In short:
+
+1. **Mailbox.** Make sure `sales@fortunetradelinks.in` exists and receives email.
+2. **Resend.** Create a free account at resend.com:
+   - Under Domains, add `fortunetradelinks.in` and add the DNS records it shows at your domain registrar. These are the SPF and DKIM records that stop the emails landing in spam.
+   - Wait until the domain shows as Verified.
+   - Under API Keys, create a key.
+3. **Vercel.** Push this folder to a GitHub repository, then in Vercel choose Add New → Project and import it. `vercel.json` already sets the build command, output folder and clean URLs.
+4. **Environment variables.** In Vercel → Project → Settings → Environment Variables, add:
+   - `RESEND_API_KEY`: the key from step 2.
+   - `QUOTE_FROM`: the sender, on the verified domain, e.g. `Fortune Tradelinks Website <website@fortunetradelinks.in>`.
+   - `QUOTE_TO` (optional): recipients, comma-separated. The default is `sales@fortunetradelinks.in`.
+
+   Then redeploy.
+5. **Test.** Submit a real enquiry on the live site and check that it arrives (look in spam too). Reply to it to confirm the reply goes to the buyer.
+
+To try it before the domain is verified, set `QUOTE_FROM=onboarding@resend.dev` and `QUOTE_TO` to the email address of your Resend account; Resend only delivers test emails to that address.
+
+### Locally
+
+`npm run dev` runs `/api/quote` too. Without a key, each quote is printed in the terminal instead of emailed. To send real emails locally, copy `.env.example` to `.env.local` (git ignores it) and fill in the values. `npm run preview` serves the built pages only, so the form shows its error message there.
+
+### Spam
+
+The hidden trap field catches simple bots. If spam starts getting through, add Cloudflare Turnstile (free) to the form and check its token in `api/quote.ts`.
 
 ## Owner review before launch
 
@@ -101,8 +130,8 @@ The full checklist is in `PROJECT_BRIEF.md` Section 13. Beyond the placeholders 
   - Remaining field error messages ("Enter the contact person's name.", "Enter a valid email address.", "Enter the delivery location.", "Choose today or a later date.", "Select whether transportation is required.", "Select whether this is a recurring requirement.", "Enter the expected delivery frequency.", "Select a product.").
   - " (optional)" after the three optional labels.
   - Frequency hint "e.g. Weekly, 2 loads per month".
-  - The no-JavaScript note "This form needs JavaScript to send. You can also email your requirement to sales@fortunetradelinks.in."
-  - The dev-only "not connected" banner, which never appears on the live site.
+  - The no-JavaScript confirmation page's title ("Requirement submitted" / "Requirement not sent") and link "Back to Request a Quote".
+  - The quote email to the sales team: subject "Quote request: {quantity} KL – {company}", the "New quote request from the website…" line, and "Reply to this email to answer…".
 - **Header and accessibility:** "Menu" on the mobile menu button, "Skip to content", and the "Main" navigation label.
 - **Contact map:** "Show map" and the map title. These appear only if `showMap` is turned on.
 - **Products:** caption "Anhydrous Denatured Ethanol specification". It appears only once specification data is filled in.
@@ -119,14 +148,10 @@ The full checklist is in `PROJECT_BRIEF.md` Section 13. Beyond the placeholders 
   - Other buttons (Contact Us, Email Us, Go to Home) are white pills with a green outline.
   - Inner pages open with a breadcrumb and a rounded green title panel.
 - The logo's slogan line ("SUSTAINABLE ENERGY | STRONGER TOMORROW") is left off the site. It is a claim, and the brief (Section 4) avoids unverifiable claims. The "ETHANOL SUPPLY & TRADING" line appears only on the share image, because it is too small to read in the header. Approve either if you want them used.
-- The image placeholders on Home, Products and Logistics need real, neutral industrial images: no third-party branding or logos.
+- Quotes are emailed through Resend, a third-party email service. The Privacy Policy's "Third-Party Services" section already covers email services.
 - `public/images/og-default.png` (the link-preview image) is the logo on white.
 - Organization structured data now includes the logo alongside name, URL and email. The brief listed name, URL and email only, to avoid placeholders; the logo is real.
 - Industries is linked only from the footer's "More" column.
 
-**Hosting notes:**
-
-- Serve `/assets/*` with a long cache lifetime (the file names are hashed) and HTML with `no-cache`.
-- Enable gzip or brotli compression.
-- Serve `404.html` with a 404 status.
+**Hosting notes:** the site is set up for Vercel (`vercel.json`). It serves `/about-us` from `about-us.html`, uses `404.html` for unknown pages, compresses files, and caches `/assets/*` for a year (the file names are hashed). On another host, set up the same things.
 - If you add a Content-Security-Policy, the small inline script in the page head needs a hash.
