@@ -104,6 +104,36 @@ export const logo = {
   markHeight: 120,
 };
 
+export type ClientService = 'ethanol' | 'logistics';
+
+export interface Client {
+  /** Company name as shown under the logo. */
+  name: string;
+  /** Logo file name without extension: put e.g. src/assets/clients/nayara-energy.png. */
+  slug: string;
+  services: ClientService[];
+}
+
+/**
+ * "Our Clients" on the Home page. Name a company here only once it has agreed to be listed,
+ * and use its logo only as its brand guidelines allow (brief Section 4, rule 6).
+ * Set enabled to false to hide the whole section.
+ *
+ * Logos: add <slug>.png (or .svg / .webp / .jpg) to src/assets/clients/. A logo shows up as
+ * soon as its file is there; until then the card shows a "Logo" placeholder.
+ */
+export const clientsSection: { enabled: boolean; clients: Client[] } = {
+  enabled: false,
+  clients: [
+    { name: 'Reliance Industries Ltd. (Jio-bp)', slug: 'reliance-jio-bp', services: ['ethanol'] },
+    { name: 'Nayara Energy Ltd.', slug: 'nayara-energy', services: ['ethanol'] },
+    { name: 'Shell Marketing India Pvt. Ltd.', slug: 'shell', services: ['ethanol'] },
+    { name: 'Indian Oil Corporation Ltd.', slug: 'indian-oil', services: ['logistics'] },
+    { name: 'Bharat Petroleum Corporation Ltd.', slug: 'bharat-petroleum', services: ['logistics'] },
+    { name: 'Hindustan Petroleum Corporation Ltd.', slug: 'hindustan-petroleum', services: ['logistics'] },
+  ],
+};
+
 export interface SpecificationRow {
   label: string;
   value: string;

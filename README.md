@@ -23,6 +23,9 @@ npm run preview    # serve dist/ locally to check the production build
 | Shared components | `src/components/` |
 | Pages | `src/pages/` |
 | Prerender, sitemap.xml, robots.txt | `scripts/prerender.mjs` |
+| Client list for "Our Clients" on the Home page | `clientsSection` in `src/config/site.ts` |
+| Client logos: originals | `brand/clients/<slug>.png` (then run `npm run photos`) |
+| Client logos: site-ready, made by `npm run photos` | `src/assets/clients/` (see the README there) |
 | Quote form server function (emails each quote) | `api/quote.ts` |
 | Quote fields and validation rules (shared by form and server) | `src/lib/quote.ts` |
 | Vercel settings | `vercel.json` |
@@ -150,10 +153,18 @@ The full checklist is in `PROJECT_BRIEF.md` Section 13. Beyond the placeholders 
 - **Products:** caption "Anhydrous Denatured Ethanol specification". It appears only once specification data is filled in.
 - **Theme button:** the name "Dark theme" (the label in the mobile menu, and announced by screen readers) and the tooltips "Switch to dark theme" / "Switch to light theme".
 - **Photo alt text** (read out by screen readers): "Large white storage tanks at a bulk liquid terminal", "Clear, colourless liquid sample in a glass laboratory flask" and "Road tanker truck on a highway".
+- **Our Clients (Home page):**
+  - the heading "Our Clients"
+  - the line "We supply ethanol to, and provide logistics services for, these companies."
+  - the tags "Ethanol supply" and "Logistics services"
 - **Breadcrumbs and share image:** the "Breadcrumb" navigation label, the short page names used in it (e.g. "About Us"), and the share-image alt text "Fortune Tradelinks logo".
 
 **Decisions:**
 
+- **Permission for "Our Clients".** The brief (Section 4, rule 6) allows customer names and logos only with permission. Large oil companies usually require written approval before a supplier shows their name or logo. Confirm each company has agreed before launch. Until then you can hide the section with `clientsSection.enabled = false`.
+- **Client details to confirm:**
+  - Company names were corrected to the official forms: "Reliance Industries Ltd." (not Pvt. Ltd.), "Bharat Petroleum Corporation Ltd.", "Hindustan Petroleum Corporation Ltd.".
+  - Shell's entity name is as given: "Shell Marketing India Pvt. Ltd." Its Indian fuel business is usually "Shell India Markets Pvt. Ltd.", so check which entity you work with.
 - "Required Delivery Date (optional)" reads awkwardly. Keep it, or rename the field?
 - The design follows the two reference sites and uses the logo's colours. This replaces the amber accent suggested in the brief (Section 5):
   - Headings are navy. This came from the previous logo; the new logo is green and black. Keep the navy, or switch headings and the call-to-action panel to the logo's black?

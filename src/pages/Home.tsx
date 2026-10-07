@@ -1,5 +1,6 @@
 import { ButtonLink } from '../components/ButtonLink';
 import { EmailLink } from '../components/ContactValues';
+import { ClientLogos } from '../components/ClientLogos';
 import { CtaBand } from '../components/CtaBand';
 import { FeatureGrid, type Feature } from '../components/FeatureGrid';
 import { FlowDiagram } from '../components/FlowDiagram';
@@ -8,7 +9,7 @@ import { ProcessSteps, type ProcessStep } from '../components/ProcessSteps';
 import { Section } from '../components/Section';
 import { SiteImage } from '../components/SiteImage';
 import { pages } from '../config/pages';
-import { images, site } from '../config/site';
+import { clientsSection, images, site } from '../config/site';
 import { cx } from '../lib/cx';
 import './Home.css';
 
@@ -143,6 +144,14 @@ export default function Home() {
       <Section heading="Why Work With Fortune Tradelinks?">
         <FeatureGrid items={whyUs} columns={3} />
       </Section>
+
+      {/* [PROPOSED COPY] heading and intro: not in the brief; added at the owner's request. */}
+      {clientsSection.enabled && (
+        <Section heading="Our Clients" alt className="home-clients">
+          <p>We supply ethanol to, and provide logistics services for, these companies.</p>
+          <ClientLogos clients={clientsSection.clients} />
+        </Section>
+      )}
 
       <Section heading="Our Supply Process">
         <ProcessSteps steps={supplyProcess} columns={4} />
