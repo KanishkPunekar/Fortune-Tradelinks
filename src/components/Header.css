@@ -47,18 +47,41 @@
   border-radius: var(--radius);
 }
 
-/* Logo height per breakpoint, in px so a larger browser font size doesn't grow it; width
-   follows the artwork, and object-fit keeps the proportions if the box is ever squeezed. */
+.site-header__brand > picture {
+  display: block;
+}
+
+/*
+ * Logo: the leaf mark alone on small phones (up to 26.24em), where the wide wordmark doesn't
+ * fit beside the Request a Quote button and Menu; the full logo above that. The image switch is
+ * the <source> media query in Header.tsx (MARK_ONLY_QUERY): use the identical query text here,
+ * so the size and the image always agree.
+ * Heights in px so a larger browser font size doesn't grow the logo; the width follows the
+ * artwork (logo 892 x 156, mark 160 x 120), and object-fit keeps the proportions if the box
+ * is ever squeezed.
+ */
 .site-header__logo {
   display: block;
   width: auto;
   max-width: none;
-  height: 36px;
+  height: 30px;
   object-fit: contain;
   object-position: left center;
 }
 
+@media (max-width: 26.24em) {
+  .site-header__logo {
+    height: 40px;
+  }
+}
+
 @media (min-width: 36em) {
+  .site-header__logo {
+    height: 36px;
+  }
+}
+
+@media (min-width: 75em) {
   .site-header__logo {
     height: 44px;
   }
@@ -285,10 +308,6 @@
   .site-header__bar {
     flex-wrap: nowrap;
     column-gap: 1.5rem;
-  }
-
-  .site-header__logo {
-    height: 52px;
   }
 
   .site-header__quote {

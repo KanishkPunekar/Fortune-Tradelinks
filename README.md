@@ -27,7 +27,7 @@ npm run preview    # serve dist/ locally to check the production build
 | Quote fields and validation rules (shared by form and server) | `src/lib/quote.ts` |
 | Vercel settings | `vercel.json` |
 | Environment variables template | `.env.example` |
-| Logo artwork (source) | `brand/logo-source.png` |
+| Logo artwork (source) | `brand/logo-source.jpg` (previous logo kept in `brand/archive/`) |
 | Logo, favicons and share image (generated) | `public/images/`, `public/favicon*`, `public/apple-touch-icon.png` |
 | Brand asset generator | `scripts/make-brand-assets.mjs` (`npm run brand`) |
 
@@ -44,7 +44,20 @@ Optional content that is off until the owner confirms it:
 
 ## Logo and photos
 
-The logo is cut out of `brand/logo-source.png` (the supplied artwork on black) onto a transparent background. `npm run brand` regenerates the header logo, favicons and share image from that file. If the artwork changes, replace the file, run `npm run brand`, then set `logo.width` and `logo.height` in `src/config/site.ts` to the size the script prints. The script's crop positions are for the current artwork. A vector (SVG) version of the logo would be sharper still, if one exists.
+The logo is cut out of `brand/logo-source.jpg` (the supplied artwork on a white background) onto a transparent background. `npm run brand` makes every logo file from it:
+
+- `logo.png`: the leaf mark + "fortune tradelinks", used in the header and footer.
+- `logo-dark.png`: the same with the black wordmark in white, for the dark theme.
+- `logo-mark.png`: the leaf mark alone. Phones narrower than 420px show this in the header, because the full logo doesn't fit beside "Request a Quote" and Menu.
+- The favicons, the iPhone icon, and the share image `og-default.png` (the full logo, tagline included).
+
+The script finds the mark, wordmark and tagline in the artwork automatically. If the logo changes:
+
+1. Replace `brand/logo-source.jpg`, keeping a white background.
+2. Run `npm run brand`.
+3. Copy the sizes it prints into `logo` in `src/config/site.ts`.
+
+A vector (SVG) version of the logo would be sharper still, if one exists.
 
 Photos are set in `images` in `src/config/site.ts`: the Home hero, Products and Logistics. All three are in place.
 
@@ -79,7 +92,7 @@ The sun/moon button in the header switches between the light and dark themes. It
 - **Default:** light, for every visitor, whatever their system setting. If a visitor switches to dark, the choice is remembered in their browser (`localStorage` key `ft-theme`).
 - **No flash:** a small script in `index.html` applies the theme before the page appears.
 - **Without JavaScript:** the site stays light and the button is hidden.
-- **Colours:** both sets are in `src/styles/global.css`, the light tokens under `:root` and the dark ones under `:root[data-theme='dark']`. The logo has a dark-theme version, `public/images/logo-dark.png`, with the navy wordmark in white; `npm run brand` makes it.
+- **Colours:** both sets are in `src/styles/global.css`, the light tokens under `:root` and the dark ones under `:root[data-theme='dark']`. The logo has a dark-theme version, `public/images/logo-dark.png`, with the black wordmark in white; `npm run brand` makes it.
 
 ## Build output
 
@@ -143,13 +156,13 @@ The full checklist is in `PROJECT_BRIEF.md` Section 13. Beyond the placeholders 
 
 - "Required Delivery Date (optional)" reads awkwardly. Keep it, or rename the field?
 - The design follows the two reference sites and uses the logo's colours. This replaces the amber accent suggested in the brief (Section 5):
-  - Headings are logo navy.
+  - Headings are navy. This came from the previous logo; the new logo is green and black. Keep the navy, or switch headings and the call-to-action panel to the logo's black?
   - Enquiry buttons (Request a Quote, Enquire Now, Submit Requirement) are filled green pills.
   - Other buttons (Contact Us, Email Us, Go to Home) are white pills with a green outline.
   - Inner pages open with a breadcrumb and a rounded green title panel.
-- The logo's slogan line ("SUSTAINABLE ENERGY | STRONGER TOMORROW") is left off the site. It is a claim, and the brief (Section 4) avoids unverifiable claims. The "ETHANOL SUPPLY & TRADING" line appears only on the share image, because it is too small to read in the header. Approve either if you want them used.
+- The logo's tagline ("ETHANOL • BIOFUEL • LOGISTICS") appears only on the link-preview image; in the header and footer it would be too small to read. "Biofuel" suggests products beyond ethanol, while the brief (Section 4) lists Anhydrous Denatured Ethanol as the only product. Confirm the tagline is accurate, or leave it off the preview image too.
 - Quotes are emailed through Resend, a third-party email service. The Privacy Policy's "Third-Party Services" section already covers email services.
-- `public/images/og-default.png` (the link-preview image) is the logo on white.
+- `public/images/og-default.png` (the link-preview image) is the full logo on white.
 - Organization structured data now includes the logo alongside name, URL and email. The brief listed name, URL and email only, to avoid placeholders; the logo is real.
 - Industries is linked only from the footer's "More" column.
 

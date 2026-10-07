@@ -10,6 +10,29 @@ import './Header.css';
 /** Full nav on one line from here up. Keep in sync with the 64em queries in Header.css. */
 const DESKTOP_QUERY = '(min-width: 64em)';
 
+/** Up to this width the header shows the leaf mark alone. Header.css uses the identical query. */
+const MARK_ONLY_QUERY = '(max-width: 26.24em)';
+
+/**
+ * The header logo for one theme (CSS shows the one matching <html data-theme>). The <source>
+ * swaps in the leaf mark on small phones, so each screen downloads only the image it shows.
+ */
+function HeaderLogo({ theme }: { theme: 'light' | 'dark' }) {
+  return (
+    <picture className={theme === 'dark' ? 'logo-variant--dark' : 'logo-variant--light'}>
+      <source media={MARK_ONLY_QUERY} srcSet={logo.markSrc} width={logo.markWidth} height={logo.markHeight} />
+      <img
+        src={theme === 'dark' ? logo.srcDark : logo.src}
+        width={logo.width}
+        height={logo.height}
+        alt={site.name}
+        className="site-header__logo"
+        loading={theme === 'dark' ? 'lazy' : undefined}
+      />
+    </picture>
+  );
+}
+
 /** The primary nav button ("Request a Quote"), also shown as a persistent button in the narrow bar. */
 const quoteItem = headerNav.find((item) => item.button === 'primary');
 
@@ -81,21 +104,8 @@ export function Header() {
         <div className="site-header__brand-wrap">
           <Link to={pages.home.path} className="site-header__brand" onClick={close}>
             {/* CSS shows one of the two per theme (.logo-variant--*); the hidden one isn't announced. */}
-            <img
-              src={logo.src}
-              width={logo.width}
-              height={logo.height}
-              alt={site.name}
-              className="site-header__logo logo-variant--light"
-            />
-            <img
-              src={logo.srcDark}
-              width={logo.width}
-              height={logo.height}
-              alt={site.name}
-              className="site-header__logo logo-variant--dark"
-              loading="lazy"
-            />
+            <HeaderLogo theme="light" />
+            <HeaderLogo theme="dark" />
           </Link>
         </div>
 

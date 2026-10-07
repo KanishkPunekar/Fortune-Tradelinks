@@ -89,15 +89,19 @@ export const images: Record<'homeHero' | 'products' | 'logistics', SiteImageSour
 };
 
 /**
- * Company logo: FT mark + wordmark, cut out of brand/logo-source.png onto a transparent
- * background by `npm run brand`. width/height must match the file (the script prints them).
+ * Company logo: leaf mark + wordmark, cut out of brand/logo-source.jpg onto a transparent
+ * background by `npm run brand`. Sizes must match the files (the script prints them).
  */
 export const logo = {
   src: '/images/logo.png',
-  /** Dark-theme version: the navy wordmark recoloured to white. Same size. */
+  /** Dark-theme version: the black wordmark recoloured to white. Same size. */
   srcDark: '/images/logo-dark.png',
-  width: 549,
+  width: 892,
   height: 156,
+  /** The leaf mark alone, for the header on small phones (green, so it suits both themes). */
+  markSrc: '/images/logo-mark.png',
+  markWidth: 160,
+  markHeight: 120,
 };
 
 export interface SpecificationRow {
