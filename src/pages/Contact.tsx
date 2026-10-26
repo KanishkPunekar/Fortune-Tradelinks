@@ -75,7 +75,7 @@ function OfficeMap() {
           ref={frameRef}
           className="contact-map__frame"
           title="Map showing the Fortune Tradelinks office"
-          src={`https://www.google.com/maps?q=${encodeURIComponent(site.address)}&output=embed`}
+          src={`https://www.google.com/maps?q=${encodeURIComponent(site.mapQuery || site.address)}&output=embed`}
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
         />

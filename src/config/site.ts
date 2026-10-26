@@ -21,8 +21,13 @@ export interface SiteConfig {
   address: string;
   /** Optional. Leave empty to hide every GSTIN line. */
   gstin: string;
-  /** Google Maps embed on Contact, only if there is a physical office. */
+  /** Google Maps embed on Contact (loads only when the visitor clicks "Show map"). */
   showMap: boolean;
+  /**
+   * What the map searches Google Maps for. Plot and registration numbers can confuse its
+   * search, so use the findable part of the address (or a Google Maps place name).
+   */
+  mapQuery: string;
   /** "Last Updated" on Privacy Policy and Terms & Conditions. */
   legalLastUpdated: string;
   /**
@@ -42,10 +47,12 @@ export const site: SiteConfig = {
   url: 'https://www.fortunetradelinks.in', // [TO CONFIRM www vs non-www]
   emailSales: 'sales@fortunetradelinks.in',
   emailInfo: 'info@fortunetradelinks.in',
-  phone: '[YOUR BUSINESS MOBILE NUMBER]',
-  address: '[YOUR REGISTERED BUSINESS ADDRESS]',
+  phone: '+91 98863 85050',
+  address:
+    'Reg No. 88 89/2, Plot No. 51, APMC Market Yard, Mahalingpur, Taluk: Rabakavi-Banahatti, Dist: Bagalkot, Karnataka\u00a0–\u00a0587312', // \u00a0 = non-breaking space: keeps the PIN with the state
   gstin: '',
-  showMap: false,
+  showMap: true,
+  mapQuery: 'Krishi Utpanna Marukatte, Mahalingpur, Karnataka', // Google's listing for the APMC market yard
   legalLastUpdated: '[DATE]',
   formEndpoint: '/api/quote',
 };

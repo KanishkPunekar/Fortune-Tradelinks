@@ -58,7 +58,7 @@ Run `npx vercel --prod` again to publish changes. Later, you can connect the sam
 **What your client will see**
 
 - **Every page, the theme switch and the photos:** all working.
-- **Highlighted `[PLACEHOLDER]` values** (mobile number, address, legal name, date): shown on purpose, so they're easy to spot and replace.
+- **The highlighted `[DATE]`** on the Privacy Policy and Terms pages ("Last Updated"): shown on purpose, so it's easy to spot and replace.
 - **The Request a Quote form:** it checks fields as normal, but **submitting shows the error message** ("Your requirement couldn't be sent… or email it to sales@…"), because it can't send email yet. Each attempt is still recorded in Vercel → Logs. Either tell your client the form isn't connected yet, or do the 5-minute test setup below.
 
 **Optional: make the form work for the demo (5 minutes, no DNS changes)**
@@ -311,7 +311,7 @@ The website is set up for `https://www.fortunetradelinks.in` (with `www`) as its
 
 ## 8. Launch checklist
 
-- [ ] **Placeholders replaced** in `src/config/site.ts`: legal business name, mobile number, registered address, and the "Last Updated" date for the legal pages. Search the live site for `[` to spot any left.
+- [ ] **Placeholders replaced** in `src/config/site.ts`: the "Last Updated" date for the legal pages (`legalLastUpdated`) and the legal business name (`legalName`). The phone number and registered address are done. Search the live site for `[` to spot any left.
 - [ ] **Form tested** end to end on the live domain: the email arrives, and Reply goes to the buyer.
 - [ ] **Pages:** every page opens on `https://www.fortunetradelinks.in`, and the address without `www` redirects to it.
 - [ ] `https://www.fortunetradelinks.in/sitemap.xml` and `/robots.txt` open.

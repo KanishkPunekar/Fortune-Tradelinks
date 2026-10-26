@@ -43,7 +43,7 @@ Optional content that is off until the owner confirms it:
 - `optionalContent.typicalQuantities`: the "Typical Requirements We Handle" block on Ethanol Supply.
 - `optionalContent.productSpecification`: the specification table on Products. Rows appear as values are filled in.
 - `site.gstin`: shows a GSTIN line in the footer and on Compliance when set.
-- `site.showMap`: a click-to-load map on Contact, once a real address is set.
+- `site.showMap` (now on): a click-to-load Google Map on the Contact page. Nothing loads from Google until the visitor clicks "Show map". `site.mapQuery` is what the map searches for; it currently points at the APMC market yard in Mahalingpur. If the business gets its own Google Maps listing, put that listing's name here for an exact pin.
 
 ## Logo and photos
 
@@ -149,7 +149,7 @@ The full checklist is in `PROJECT_BRIEF.md` Section 13. Beyond the placeholders 
   - The no-JavaScript confirmation page's title ("Requirement submitted" / "Requirement not sent") and link "Back to Request a Quote".
   - The quote email to the sales team: subject "Quote request: {quantity} KL – {company}", the "New quote request from the website…" line, and "Reply to this email to answer…".
 - **Header and accessibility:** "Menu" on the mobile menu button, "Skip to content", and the "Main" navigation label.
-- **Contact map:** "Show map" and the map title. These appear only if `showMap` is turned on.
+- **Contact map:** the "Show map" button and the map's title for screen readers, "Map showing the Fortune Tradelinks office".
 - **Products:** caption "Anhydrous Denatured Ethanol specification". It appears only once specification data is filled in.
 - **Theme button:** the name "Dark theme" (the label in the mobile menu, and announced by screen readers) and the tooltips "Switch to dark theme" / "Switch to light theme".
 - **Photo alt text** (read out by screen readers): "Large white storage tanks at a bulk liquid terminal", "Clear, colourless liquid sample in a glass laboratory flask" and "Road tanker truck on a highway".
